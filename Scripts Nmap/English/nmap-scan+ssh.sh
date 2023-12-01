@@ -1,10 +1,6 @@
 #!/bin/bash
 
-# Warning message
-echo "This script will perform a network scan to find SSH (OpenSSH) ports on hosts. Please ensure you have the necessary permissions before scanning any network. The first three IPs in the network range will be skipped as they might correspond to certain services in VirtualBox environments, which can affect the script's functionality."
-echo ""
-
-# Temporary directory and files
+# Directory and files
 temp_dir="/tmp"
 log_dir="/var/log"
 log_file="nmap-script-ssh.log"
@@ -36,18 +32,17 @@ log_message "Script Start"
 read -p "Enter the network address to scan (example: 192.168.0.0/24): " red
 log_message "Entered network address: $red"
 
-# Ask for the location to save the hosts.txt file
-read -p "Enter the location to save the hosts.txt file (example: /path/to/directory): " hosts_dir
+# Ask for the location to save the hosts.txt fileread -p "Enter the location to save the hosts.txt file (example: /path/to/directory): " hosts_dir
 hosts_file="$hosts_dir/hosts.txt"
 log_message "Location of hosts.txt file: $hosts_file"
 
 # Create or clear hosts.txt file
 > "$hosts_file"
 
-# Step 2: Perform a complete network scan to find other hosts in that network
+# Step 2: Perform a complete network scan to find other hosts in that network, excluding "QEMU virtual NIC"
 echo "Executing a full network scan on the network $red..."
 log_message "Executing a full network scan on the network $red..."
-nmap -sn "$red" | grep 'Nmap scan report' | awk '{print $5}' | grep -vE "^(192\.168\.0\.[123])" | tail -n +4 > "$temp_dir/temp_hosts.txt"
+nmap -sn 192.168.1.0/24 | grep 'Nmap scan report' | awk '{print $5}' | awk -F '.' '!($4 < 4)' > "$temp_dir/temp_hosts.txt"
 log_message "Network scan completed"
 log_message "Network scan results:"
 nmap -sn "$red" >> "$log_dir/$log_file"  # Network scan results in log
@@ -79,3 +74,6 @@ log_message "Temporary file deleted"
 
 log_message "End of script"
 echo -e "\nThe hosts.txt file has been successfully generated at $hosts_file."
+
+
+
