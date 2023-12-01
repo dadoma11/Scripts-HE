@@ -1,12 +1,8 @@
 #!/bin/bash
 
-echo "This script will perform detection of known vulnerabilities in specific systems and applications."
-echo "It will use Metasploit to check for the presence of known exploits."
-echo "Please be aware that running vulnerability tests on systems or applications without explicit permission may be illegal and is strictly prohibited."
-echo "Use this script responsibly and only on systems where you have explicit permission to do so!"
+# Warning message
+echo "This script will perform a network scan to find SSH (OpenSSH) ports on hosts. Please ensure you have the necessary permissions before scanning any network. The first three IPs in the network range will be skipped as they might correspond to certain services in VirtualBox environments, which can affect the script's functionality."
 echo ""
-
-# Rest of the script...
 
 # Temporary directory and files
 temp_dir="/tmp"
@@ -49,9 +45,9 @@ log_message "Location of hosts.txt file: $hosts_file"
 > "$hosts_file"
 
 # Step 2: Perform a complete network scan to find other hosts in that network
-echo "Executing a full network scan on network $red..."
-log_message "Executing a full network scan on network $red..."
-nmap -sn "$red" | grep 'Nmap scan report' | awk '{print $5}' | grep -vE "^(192\.168\.0\.[123])" > "$temp_dir/temp_hosts.txt"
+echo "Executing a full network scan on the network $red..."
+log_message "Executing a full network scan on the network $red..."
+nmap -sn "$red" | grep 'Nmap scan report' | awk '{print $5}' | grep -vE "^(192\.168\.0\.[123])" | tail -n +4 > "$temp_dir/temp_hosts.txt"
 log_message "Network scan completed"
 log_message "Network scan results:"
 nmap -sn "$red" >> "$log_dir/$log_file"  # Network scan results in log
