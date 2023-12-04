@@ -44,7 +44,7 @@ log_message "Ubicación del archivo hosts.txt: $hosts_file"
 # Paso 2: Realizar un escaneo de red completo para averiguar el resto de hosts de esa red
 echo "Ejecutando un escaneo de red completo en la red $red..."
 log_message "Ejecutando un escaneo de red completo en la red $red..."
-nmap -sn 192.168.1.0/24 | grep 'Nmap scan report' | awk '{print $5}' | awk -F '.' '!($4 < 4)' > "$temp_dir/temp_hosts.txt"
+nmap -sn "$red" | grep 'Nmap scan report' | awk '{print $5}' | awk -F '.' '!($4 < 4)' > "$temp_dir/temp_hosts.txt"
 log_message "Escaneo de red completado"
 log_message "Resultados del escaneo de red:"
 nmap -sn "$red" >> "$log_dir/$log_file"  # Resultados del escaneo de red en el log
